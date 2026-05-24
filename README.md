@@ -217,14 +217,14 @@ ray start --head --temp-dir=/home/oai/ray_tmp --dashboard-host=0.0.0.0
 
 ```bash
 ray stop --force
-ray start --address='10.29.155.44:6379' --resources='{"worker_id": 0}' --num-gpus=1
+ray start --address='10.29.155.44:6379' --resources='{"worker_0": 1}' --num-gpus=1
 ```
 
 **机器3 (Worker 1):**
 
 ```bash
 ray stop --force
-ray start --address='10.29.155.44:6379' --resources='{"worker_id": 1}' --num-gpus=1
+ray start --address='10.29.155.44:6379' --resources='{"worker_1": 1}' --num-gpus=1
 ```
 
 ### 步骤 5: 验证集群状态
@@ -238,8 +238,8 @@ ray status
 # 预期输出:
 # 3 nodes
 #  node1 (head): 1 GPU
-#  node2 (worker): 1 GPU, resources: {"worker_id": 0}
-#  node3 (worker): 1 GPU, resources: {"worker_id": 1}
+#  node2 (worker): 1 GPU, resources: {"worker_0": 1}
+#  node3 (worker): 1 GPU, resources: {"worker_1": 1}
 
 # 查看 Dashboard
 # 浏览器打开: http://10.29.155.44:8265 → Nodes 页签
@@ -321,7 +321,7 @@ import ray
 ray.init(address='auto')
 print(ray.nodes())
 print(f'可用资源: {ray.available_resources()}')
-# 应看到 worker_id: 0 和 worker_id: 1
+# 应看到 worker_0: 1 和 worker_1: 1
 "
 ```
 
@@ -355,7 +355,7 @@ cp -r /home/oai/moe-dis/worker_1 /home/oai/moe-dis/worker_2
 
 ```bash
 ray stop --force
-ray start --address='10.29.155.44:6379' --resources='{"worker_id": 2}' --num-gpus=1
+ray start --address='10.29.155.44:6379' --resources='{"worker_2": 1}' --num-gpus=1
 ```
 
 ### 不均匀分区 (手动配置)

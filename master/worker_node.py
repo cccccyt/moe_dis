@@ -7,8 +7,10 @@ import gc
 import time
 import threading
 
-# 确保能找到 Qwen 源码
-sys.path.append(os.path.abspath("./qwen_src"))
+# 确保能找到 Qwen 源码（见 README.md: worker 机器需将 qwen_src/ 放在 worker_node.py 同目录）
+_worker_dir = os.path.dirname(os.path.abspath(__file__))
+if os.path.isdir(os.path.join(_worker_dir, "qwen_src")):
+    sys.path.insert(0, _worker_dir)
 from qwen_src.modeling_qwen2_moe import Qwen2MoeMLP
 
 @ray.remote(num_gpus=1, max_concurrency=4)  # 允许最多4个请求并发处理
@@ -153,8 +155,8 @@ class RemoteExpertNode:
         
         # 预留25%显存用于推理计算（KV cache、激活值、base model开销）
         # 使用75%加载专家模型，25%预留推理
-        available_vram_gb = total_vram_gb * 0.75  # 75%用于专家模型
-        print(f"可用显存(预留25%用于推理): {available_vram_gb:.2f}GB")
+        available_vram_gb = total_vram_gb * 0.65  # 65%用于专家模型
+        print(f"可用显存(预留35%用于推理): {available_vram_gb:.2f}GB")
         
         # 估算单个专家的显存占用
         # Qwen1.5-MoE-2.7B 每个专家约为：

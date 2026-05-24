@@ -10,11 +10,11 @@
 
 机器2 (Worker 0):
   ray stop --force
-  ray start --address='10.29.155.44:6379' --resources='{"worker_id": 0}' --num-gpus=1
+  ray start --address='10.29.155.44:6379' --resources='{"worker_0": 1}' --num-gpus=1
 
 机器3 (Worker 1):
   ray stop --force
-  ray start --address='10.29.155.44:6379' --resources='{"worker_id": 1}' --num-gpus=1
+  ray start --address='10.29.155.44:6379' --resources='{"worker_1": 1}' --num-gpus=1
 
 端口清理:
   lsof -t -i :8000 | xargs kill -9
@@ -178,7 +178,7 @@ def initialize_model():
     for worker_id, (start, end) in enumerate(EXPERT_RANGES):
         print(f"  创建 Worker {worker_id}: 负责专家 {start}-{end-1} (共 {end-start} 个)")
         actor = RemoteExpertNode.options(
-            resources={"worker_id": worker_id},
+            resources={f"worker_{worker_id}": 1},
             num_gpus=1
         ).remote(config, split_path, expert_start=start, expert_end=end)
         expert_ranges_with_actors.append((start, end, actor))
